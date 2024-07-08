@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ana Sayfa</title>
+</head>
+<body>
+<h1>Hoş Geldiniz!</h1>
+<p>Bu basit blog uygulamasında yeni yazılar ekleyebilir, mevcut yazıları güncelleyebilir ve silebilirsiniz.</p>
+
+<h2>Yazılar</h2>
+<ul id="post-list"></ul>
+
+<h2>Yeni Yazı Ekle</h2>
+<form id="add-post-form">
+    <label for="title">Başlık:</label>
+    <input type="text" id="title" name="title" required><br>
+    <label for="body">İçerik:</label>
+    <textarea id="body" name="body" required></textarea><br>
+    <button type="submit">Yazı Ekle</button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Sayfa yüklendiğinde mevcut yazıları listele
+        $.ajax({
+            url: "/posts",
+            type: "GET",
+            success: function(posts) {
+                posts.forEach(function(post) {
+                    $("#post-list").append("<li>" + post.title + " - " + post.body + "</li>");
+                });
+            }
+        });
+
+        // Yeni yazı ekleme formu
+        $("#add-post-form").submit(function(event) {
+            event.preventDefault();
+            var title = $("#title").val();
+            var body = $("#body").val();
+            $.ajax({
+                url: "/posts", // POST isteğini "/posts" endpoint'ine gönderiyoruz
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ title: title, body: body }),
+                success: function(post) {
+                    $("#post-list").append("<li>" + post.title + " - " + post.body + "</li>");
+                    $("#title").val("");
+                    $("#body").val("");
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText); // Hata mesajını konsola yazdır
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
