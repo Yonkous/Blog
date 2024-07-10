@@ -1,59 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ana Sayfa</title>
+    <title>Blog Uygulaması</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        form input[type="text"], form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .post-form input[type="text"], .post-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .post-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .post-form button:hover {
+            background-color: #45a049;
+        }
+        .post-preview {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block; /* Ensures posts display inline */
+            vertical-align: top; /* Aligns posts at the top */
+            margin-right: 20px; /* Adds spacing between posts */
+        }
+        .post-preview:hover {
+            background-color: #b38181;
+        }
+        #fullscreen-post {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #fullscreen-post h1 {
+            font-size: 24px;
+            margin-bottom: 10px; /* Ensure some spacing between title and body */
+        }
+
+        #fullscreen-post p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        #close-fullscreen {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 <h1>Hoş Geldiniz!</h1>
-<p>Bu basit blog uygulamasında yeni yazılar ekleyebilir, mevcut yazıları güncelleyebilir ve silebilirsiniz.</p>
 
+<!-- Giriş ve Kayıt Formları -->
+<div id="login-section" class="form-container">
+    <h2>Giriş Yap</h2>
+    <form id="login-form">
+        <label for="username">Kullanıcı Adı:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Şifre:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Giriş Yap</button>
+    </form>
+    <p>Hesabınız yok mu? <a href="#" id="show-signup">Kayıt Ol</a></p>
+</div>
+
+<div id="signup-section" class="form-container hidden">
+    <h2>Kayıt Ol</h2>
+    <form id="signup-form">
+        <label for="signup-username">Kullanıcı Adı:</label>
+        <input type="text" id="signup-username" name="username" required>
+        <label for="signup-password">Şifre:</label>
+        <input type="password" id="signup-password" name="password" required>
+        <button type="submit">Kayıt Ol</button>
+    </form>
+    <p>Zaten bir hesabınız var mı? <a href="#" id="show-login">Giriş Yap</a></p>
+</div>
+
+<!-- Yeni Yazı Ekle Formu -->
+<div id="add-post-section" class="form-container hidden">
+    <h2>Yeni Yazı Ekle</h2>
+    <form id="add-post-form" class="post-form">
+        <label for="title">Başlık:</label>
+        <input type="text" id="title" name="title" required><br>
+        <label for="body">İçerik:</label>
+        <textarea id="body" name="body" required></textarea><br>
+        <button type="submit">Yazı Ekle</button>
+    </form>
+</div>
+
+<!-- Yazı Listesi -->
 <h2>Yazılar</h2>
-<ul id="post-list"></ul>
+<div id="post-list" style="display: flex; flex-wrap: wrap;"></div> <!-- Updated to use flexbox -->
 
-<h2>Yeni Yazı Ekle</h2>
-<form id="add-post-form">
-    <label for="title">Başlık:</label>
-    <input type="text" id="title" name="title" required><br>
-    <label for="body">İçerik:</label>
-    <textarea id="body" name="body" required></textarea><br>
-    <button type="submit">Yazı Ekle</button>
-</form>
+<!-- Fullscreen Post Display -->
+<div id="fullscreen-post">
+    <div id="close-fullscreen">✖</div>
+    <h1 id="fullscreen-post-title"></h1>
+    <p id="fullscreen-post-body"></p>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 <script>
     $(document).ready(function() {
+        var isAuthenticated = false; // Varsayılan olarak giriş yapılmadı kabul edilir
+
+        // Giriş Formu İşlemleri
+        $("#login-form").submit(function(event) {
+            event.preventDefault();
+            var username = $("#username").val();
+            var password = $("#password").val();
+            $.ajax({
+                url: "/login",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ username: username, password: password }),
+                success: function(response) {
+                    isAuthenticated = true; // Giriş başarılı olduğunda
+                    $("#login-section").addClass("hidden");
+                    $("#signup-section").addClass("hidden");
+                    $("#add-post-section").removeClass("hidden");
+                    alert("Giriş başarılı!");
+                    // Token tarayıcıya kaydedilir
+                    document.cookie = "token=" + response.token;
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("Giriş başarısız! Kullanıcı adı veya şifre yanlış.");
+                }
+            });
+        });
+
+        // Kayıt Formu İşlemleri
+        $("#signup-form").submit(function(event) {
+            event.preventDefault();
+            var username = $("#signup-username").val();
+            var password = $("#signup-password").val();
+            $.ajax({
+                url: "/signup",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ username: username, password: password }),
+                success: function(response) {
+                    alert("Kayıt başarılı! Lütfen giriş yapın.");
+                    $("#signup-section").addClass("hidden");
+                    $("#login-section").removeClass("hidden");
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("Kayıt işlemi başarısız! Kullanıcı adı zaten kullanılıyor olabilir.");
+                }
+            });
+        });
+
+        // Yeni Yazı Ekleme Formu İşlemleri
+        $("#add-post-form").submit(function(event) {
+            event.preventDefault();
+            if (!isAuthenticated) {
+                alert("Yazı eklemek için giriş yapmalısınız.");
+                return;
+            }
+            var title = $("#title").val();
+            var body = $("#body").val();
+            $.ajax({
+                url: "/posts",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Bearer " + getCookie("token") // Token eklendi
+                },
+                data: JSON.stringify({ title: title, body: body }),
+                success: function(post) {
+                    $("#post-list").append("<div class='post-preview' data-post-id='" + post.id + "'>" +
+                        "<h3>" + post.title + "</h3>" +
+                        "<p>" + post.body + "</p></div>");
+                    $("#title").val("");
+                    $("#body").val("");
+                    alert("Yazı başarıyla eklendi.");
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("Yazı eklenirken bir hata oluştu.");
+                }
+            });
+        });
+
         // Sayfa yüklendiğinde mevcut yazıları listele
         $.ajax({
             url: "/posts",
             type: "GET",
             success: function(posts) {
                 posts.forEach(function(post) {
-                    $("#post-list").append("<li>" + post.title + " - " + post.body + "</li>");
+                    $("#post-list").append("<div class='post-preview' data-post-id='" + post.id + "'>" +
+                        "<h3>" + post.title + "</h3>" +
+                        "<p>" + post.body + "</p></div>");
                 });
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                alert("Yazılar yüklenirken bir hata oluştu.");
             }
         });
 
-        // Yeni yazı ekleme formu
-        $("#add-post-form").submit(function(event) {
+        // Göster/Kapat Linkleri İşlemleri
+        $("#show-signup").click(function(event) {
             event.preventDefault();
-            var title = $("#title").val();
-            var body = $("#body").val();
+            $("#login-section").addClass("hidden");
+            $("#signup-section").removeClass("hidden");
+        });
+
+        $("#show-login").click(function(event) {
+            event.preventDefault();
+            $("#signup-section").addClass("hidden");
+            $("#login-section").removeClass("hidden");
+        });
+
+        // Token'i cookie'den almak için yardımcı fonksiyon
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+
+        // Yazı tıklaması ile tam ekran gösterme
+        $(document).on("click", ".post-preview", function() {
+            var postId = $(this).data("post-id");
             $.ajax({
-                url: "/posts", // POST isteğini "/posts" endpoint'ine gönderiyoruz
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ title: title, body: body }),
+                url: "/posts/" + postId,
+                type: "GET",
                 success: function(post) {
-                    $("#post-list").append("<li>" + post.title + " - " + post.body + "</li>");
-                    $("#title").val("");
-                    $("#body").val("");
+                    $("#fullscreen-post-title").text(post.title);
+                    $("#fullscreen-post-body").text(post.body);
+                    $("#fullscreen-post").show(); // Tam ekran gösterimi aktifleştir
                 },
                 error: function(xhr, status, error) {
-                    console.error(xhr.responseText); // Hata mesajını konsola yazdır
+                    console.error(xhr.responseText);
+                    alert("Yazı yüklenirken bir hata oluştu.");
                 }
             });
+        });
+
+        // Tam ekran modunu kapatma
+        $("#close-fullscreen").click(function() {
+            $("#fullscreen-post").hide();
         });
     });
 </script>

@@ -24,12 +24,22 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	var post []models.Post
-	json.NewDecoder(r.Body).Decode(&post)
-	err := db.Create(&post).Error
+	var post models.Post
+	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
+
+	// Perform validation if needed
+
+	if err := db.Create(&post).Error; err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(post)
 }
 
