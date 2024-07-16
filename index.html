@@ -133,9 +133,28 @@
             font-size: 20px;
             color: #333;
         }
+
+        #login-signup-links {
+            width: 100%;
+            background-color: #333;
+            padding: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        #login-signup-links a {
+            color: white;
+            margin-left: 10px;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+<div id="login-signup-links">
+    <a href="#" id="show-login">Giriş Yap</a>
+    <a href="#" id="show-signup">Kayıt Ol</a>
+</div>
+
 <h1>Hoş Geldiniz!</h1>
 
 <!-- Giriş ve Kayıt Formları -->
@@ -148,7 +167,7 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Giriş Yap</button>
     </form>
-    <p>Hesabınız yok mu? <a href="#" id="show-signup">Kayıt Ol</a></p>
+    <p>Hesabınız yok mu? <a href="#" id="show-signup-link">Kayıt Ol</a></p>
 </div>
 
 <div id="signup-section" class="form-container hidden">
@@ -160,7 +179,7 @@
         <input type="password" id="signup-password" name="password" required>
         <button type="submit">Kayıt Ol</button>
     </form>
-    <p>Zaten bir hesabınız var mı? <a href="#" id="show-login">Giriş Yap</a></p>
+    <p>Zaten bir hesabınız var mı? <a href="#" id="show-login-link">Giriş Yap</a></p>
 </div>
 
 <!-- Yeni Yazı Ekle Formu -->
@@ -190,7 +209,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 <script>
     $(document).ready(function() {
-        var isAuthenticated = false; // Varsayılan olarak giriş yapılmadı kabul edilir
+        var isAuthenticated = false; // isAuthenticated değişkeni tanımlandı
 
         // Giriş Formu İşlemleri
         $("#login-form").submit(function(event) {
@@ -290,13 +309,13 @@
         });
 
         // Göster/Kapat Linkleri İşlemleri
-        $("#show-signup").click(function(event) {
+        $("#show-signup-link").click(function(event) {
             event.preventDefault();
             $("#login-section").addClass("hidden");
             $("#signup-section").removeClass("hidden");
         });
 
-        $("#show-login").click(function(event) {
+        $("#show-login-link").click(function(event) {
             event.preventDefault();
             $("#signup-section").addClass("hidden");
             $("#login-section").removeClass("hidden");
